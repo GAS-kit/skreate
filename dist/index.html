@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <title>Skating Diagram Generator</title>
+    <link rel="canonical" href="https://lurklurk.org/skreate/" />
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Skating Diagram Generator</h1>
+      </div>
+    </header>
+
+    <h3>Read the <a href="tutorial.html">Tutorial</a>!</h3>
+
+    <div id="main">
+
+      <section id="demo">
+        <table align="center" class="inner">
+          <tr>
+            <td>
+            <h3>Edit text below</h3>
+            <div class="editor-wrapper" id="ed">
+              <div class="editor">
+              </div>
+            </div>
+            <a href="#" class="save">Save File</a>
+            |
+            <button onclick="document.getElementById('filepicker').click()">Load File</button>
+            <input type="file" class="fileInput" id="filepicker" style="display:none;"/>
+            |
+            <a href="#" class="download">Save SVG</a>
+            |
+            <a href="#" class="preview">Preview</a>
+            |
+            <button id="playthrough">Play</button>
+            <br/>
+            </td>
+            <td><div class="diagram" id="pic"></div></td>
+          </tr>
+        </table>
+      </section>
+
+    </div>
+
+    <footer>
+      <hr />
+      <div class="inner">
+        <a href="manual.html">Reference Manual</a>
+        |
+        <a href="https://github.com/daviddrysdale/skreate">GitHub</a>
+        |
+        <a href="https://lurklurk.org">David Drysdale<a>
+      </div>
+    </footer>
+
+    <!-- jQuery for $ and friends -->
+    <script src="third_party/js/jquery-3.7.1.min.js"></script>
+    <!-- Use Ace as the text editor -->
+    <script src="third_party/js/ace-1.33.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Borrow debounce from underscore -->
+    <script src="third_party/js/underscore-fragments-1.13.6.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- Note the usage of `type=module` here as this is an ES6 module -->
+    <script type="module">
+      import {setup_editor, load_skate} from './skreate.js';
+
+      $(document).ready(function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var val = urlParams.get('w');
+        if (val) {
+          $('#pic')[0].style.width = val;
+        }
+        var val = urlParams.get('h');
+        if (val) {
+          $('#pic')[0].style.height = val;
+        }
+        var val = urlParams.get('edw');
+        if (val) {
+          $('#ed')[0].style.width = val;
+        }
+        var val = urlParams.get('edh');
+        if (val) {
+          $('#ed')[0].style.height = val;
+        }
+
+        var text;
+        if (urlParams.has('text')) {
+          text = urlParams.get('text');
+        } else if (urlParams.get('load')) {
+          var url = urlParams.get('load');
+          text = load_skate(url);
+        } else {
+            text = `# hash starts a comment to end of line
+
+LFO        # give an edge code
+RFI3       # followed by a move like '3' for 3-turn
+LBI-Br     # or -Br for bracket
+xf-RFI     # can also have a transition prefix
+LFI>>      # appending >'s gives a tighter turn
+RFO---     # or +/- for longer/shorter
+
+# But more precise control needs the full form
+LFI-Ctr [angle=80,len=350,delta-angle=40]
+
+# Can also add titles, labels, rink shapes etc.
+Title [text="Example Title",x=1000,y=200]
+# See the manual for full details
+RBO-Rk`
+        }
+
+        setup_editor($('#demo'), true, text);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/manual.css" media="screen" />
+
+  <title>Skating Diagram Creator</title>
+  <link rel="canonical" href="https://lurklurk.org/skreate/doc/manual.html" />
+  <!-- Copyright 2024-2025 David Drysdale -->
+</head>
+<body>
+<h1>Skating Diagram Creator</h1>
+
+<h2>Overview</h2>
+
+<p><a href="index.html">This page</a> allows interactive creation of skating choreography diagrams.
+
+<p>To build a skating diagram, enter <i>move codes</i> into the text entry box, one per line (or separated from the
+  previous move by a semi-colon <b><code>;</code></b>).  A move code is typically a three letter code denoting the
+  skating edge, optionally followed by an abbreviation for the move being performed. Blank lines are ignored, and
+  anything after a hash (<b><code>#</code></b>) on a line is treated as a comment and ignored.
+
+<p>For example, the code <a href="./?text=LFO-Br"><b><code>LFO-Br</code></b></a> indicates a bracket turn being performed
+  from a left forward outside edge, thus ending on a left backward inside (<code>LBI</code>) edge.
+
+<p>As a shorthand, moves can be made longer or shorter by appending up to 3 plus (<b><code>+</code></b>) or minus
+  (<b><code>-</code></b>) signs, for example <a href="./?text=LFO-Rk%2B%2B"><b><code>LFO-Rk++</code></b></a>.  Moves can also be
+  made to turn more or less tightly by appending up to 3 greater-than (<b><code>&gt;</code></b>) or less-than
+  (<b><code>&lt;</code></b>) signs, for example <a href="./?text=RBI-Ctr%26lt%3B%26lt%3B"><b><code>RBI-Ctr&lt;&lt;</code></b></a>.
+
+<p>It's also possible to more precisely control exactly how big or tightly curved a particular move is. A move can be
+  followed by a comma-separated list of <i>parameters</i> enclosed in square brackets, e.g.
+  <a href="./?text=LFO%20%5Blen%3D350%2Cangle%3D90%5D"><b><code>LFO [len=350,angle=90]</code></b></a>.  The allowed parameters for
+  each move are described in the <a href="#reference">Move Reference</a> section below.
+
+<p>To sum up, skating move codes are typically made up of:
+<ul>
+  <li>An optional prefix, indicating how a change of foot is performed.  For example: <ul>
+    <li>a <b><code>wd-</code></b> prefix indicates a wide step</li>
+    <li>an <b><code>xf-</code></b> prefix indicates a cross in front</li>
+    <li>an <b><code>xb-</code></b> prefix indicates a cross behind</li>
+   </ul></li>
+  <li>An edge code, indicating the skating foot, direction, and edge.  For example, <a href="./?text=LBO"><b><code>LBO</code></b></a> indicates skating on
+    the left foot, travelling backwards on an outside edge.</li>
+  <li>An optional suffix indicating a move, turn or foot change.  For example, <a href="./?text=LFO3"><b><code>LFO3</code></b></a> indicates a three-turn from
+    a left forward outside edge, transitioning to a left backward inside edge.</li>
+  <li>Further optional suffices that adjust parameters for the move.  These can take two forms:<ul>
+    <li>A collection of comma-separated <code>name=value</code> parameters enclosed in square brackets.  For example,
+      <a href="./?text=LFO%20%5Bangle%3D120%2Clen%3D900%5D"><b><code>LFO [angle=120,len=900]</code></b></a> indicates a left
+      forward outside edge that turns 120&deg; and travels 900 cm.</li>
+    <li>Short code markers that adjust the most common parameters.  For example, <a href="./?text=LFO%26gt%3B%26gt%3B%2B%2B"><b><code>LFO&gt;&gt;++</code></b></a> indicates a
+      left forward edge that curves more and travels further than the default.</li>
+  </ul></li>
+</ul>
+
+<p>So a code like <b><code>xf-RFO3></code></b> describes:
+<ul>
+  <li>Crossing the right foot in front of the (skating) left foot, onto a forward outside edge.</li>
+  <li>Performing a 3-turn from that right forward outside edge (thus ending on a right backward inside edge).</li>
+  <li>With a slightly tighter turn than normal.</li>
+</ul>
+
+<h2>Diagram Commands</h2>
+
+<p>A skating diagram can also include commands that relate to the layout of the diagram, rather than to a particular
+  skating move.  For example, including <code>Rink</code> incorporates an ice rink layout on the diagram,
+  and <code>Title</code> adds a title for the diagram.
+
+<p>The <a href="#ref-Info"><code>Info</code></a> is worth specifically mentioning; this allows various layout helpers
+to be enabled, including a grid, and markers for the position and direction of the skater at the start and end of each
+move (e.g <b><code>Info [grid=100,markers=true]</code></b>).
+
+<p>The position and direction of the skater at each point is particularly relevant for
+  the <a href="#ref-Shift"><code>Shift</code></a> command, because it moves and rotates the skater relative to their
+  current position/direction.  (In contrast, the <a href="#ref-Warp"><code>Warp</code></a> command moves the skater to
+  an absolute position and direction on the diagram.)
+
+<h2>Counts and Timing</h2>
+
+<p>Dance choreographies often need to display a running count of moves, or an indication of how many beats of music a
+step should take.  This is done by prefixing the move code with:
+<ul>
+  <li>A <i>move number</i> followed by a bracket <b><code>)</code></b>.
+  <li>A <i>beat count</i> after a slash <b><code>/</code></b>.
+</ul>
+
+<p>For example, an input of <a href="./?text=3%29%20%2F2%20RFI"><b><code>3) /2 RFI</code></b></a> indicates that a right forward inside edge as the third step, which
+should hold for 2 beats.
+
+<p>The <a href="#ref-Info"><code>Info</code></a> command includes an <b><code>auto-count</code></b> parameter that turns
+  on automatic numbering of skating moves.
+
+<a id="reference"/><h2>Move Reference</h2>
+
+<table summary="Move reference">
+  <thead>
+    <tr>
+      <th>Example</th>
+      <th>Move</th>
+      <th></th>
+      <th>Parameters</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="ref-Edge">
+      <td class="center">
+        <b><code>LFO</code></b>
+      </td>
+      <td>Curving edge</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO"><img src="doc/LFO.svg" height="150" alt="Edge"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation from start to finish, in degrees
+          (default <code>20</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>label</code></b>: Replacement label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Straight_Edge">
+      <td class="center">
+        <b><code>LF</code></b>
+      </td>
+      <td>Straight edge</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LF"><img src="doc/LF.svg" height="150" alt="Straight Edge"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>len</code></b>: Length in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>label</code></b>: Replacement label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Three_Turn">
+      <td class="center">
+        <b><code>LFO3</code></b>
+      </td>
+      <td>Three turn</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO3"><img src="doc/LFO3.svg" height="150" alt="Three Turn"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Open_Mohawk">
+      <td class="center">
+        <b><code>LFI-OpMo</code></b>
+      </td>
+      <td>Open mohawk</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFI-OpMo"><img src="doc/LFI-OpMo.svg" height="150" alt="Open Mohawk"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Closed_Mohawk">
+      <td class="center">
+        <b><code>RBO-ClMo</code></b>
+      </td>
+      <td>Closed mohawk</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RBO-ClMo"><img src="doc/RBO-ClMo.svg" height="150" alt="Closed Mohawk"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Bracket">
+      <td class="center">
+        <b><code>LFO-Br</code></b>
+      </td>
+      <td>Bracket turn</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO-Br"><img src="doc/LFO-Br.svg" height="150" alt="Bracket"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Rocker">
+      <td class="center">
+        <b><code>LFO-Rk</code></b>
+      </td>
+      <td>Rocker turn</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO-Rk"><img src="doc/LFO-Rk.svg" height="150" alt="Rocker"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Counter">
+      <td class="center">
+        <b><code>LFO-Ctr</code></b>
+      </td>
+      <td>Counter turn</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO-Ctr"><img src="doc/LFO-Ctr.svg" height="150" alt="Counter"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Open_Choctaw">
+      <td class="center">
+        <b><code>LFI-OpCho</code></b>
+      </td>
+      <td>Open choctaw</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFI-OpCho"><img src="doc/LFI-OpCho.svg" height="150" alt="Open Choctaw"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Closed_Choctaw">
+      <td class="center">
+        <b><code>RBO-ClCho</code></b>
+      </td>
+      <td>Closed choctaw</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RBO-ClCho"><img src="doc/RBO-ClCho.svg" height="150" alt="Closed Choctaw"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Change_of_Edge">
+      <td class="center">
+        <b><code>LFO-CoE</code></b>
+      </td>
+      <td>Change of edge</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO-CoE"><img src="doc/LFO-CoE.svg" height="150" alt="Change of Edge"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+          <li><b><code>flat-len</code></b>: Length between edges in centimetres
+          (default <code>50</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Twizzle">
+      <td class="center">
+        <b><code>LFI-Tw1.5</code></b>
+      </td>
+      <td>Twizzle</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFI-Tw1.5"><img src="doc/LFI-Tw1.5.svg" height="150" alt="Twizzle"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>60</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>200</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>pre-len</code></b>: Length of entry curve in centimetres
+          (default <code>100</code>).
+          </li>
+          <li><b><code>pre-angle</code></b>: Angle of entry curve in degrees
+          (default <code>45</code>).
+          </li>
+          <li><b><code>post-len</code></b>: Length of exit curve in centimetres
+          (default <code>100</code>).
+          </li>
+          <li><b><code>post-angle</code></b>: Angle of exit curve in degrees
+          (default <code>45</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Loop_figure">
+      <td class="center">
+        <b><code>RBI-Loop</code></b>
+      </td>
+      <td>Loop figure</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RBI-Loop"><img src="doc/RBI-Loop.svg" height="150" alt="Loop figure"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>angle</code></b>: Angle of rotation for each curved part, in degrees
+          (default <code>90</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>len</code></b>: Length of each curved part in centimetres
+          (default <code>450</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>delta-angle</code></b>: Difference in angle for second curved part, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>delta-len</code></b>: Difference in length for second curved part, in centimetres
+          (default <code>0</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>transition-label</code></b>: Replacement transition label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label1</code></b>: Replacement entry label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label2</code></b>: Replacement exit label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Hop">
+      <td class="center">
+        <b><code>RB-Hop</code></b>
+      </td>
+      <td>Hop</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RB-Hop"><img src="doc/RB-Hop.svg" height="150" alt="Hop"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>size</code></b>: Circle size in centimetres
+          (default <code>5</code>).
+          </li>
+          <li><b><code>label</code></b>: Replacement label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Salchow">
+      <td class="center">
+        <b><code>LBI-1S</code></b>
+      </td>
+      <td>Salchow jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LBI-1S"><img src="doc/LBI-1S.svg" height="150" alt="Salchow"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Toe_Loop">
+      <td class="center">
+        <b><code>RBO-1T</code></b>
+      </td>
+      <td>Toe Loop jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RBO-1T"><img src="doc/RBO-1T.svg" height="150" alt="Toe Loop"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Loop_jump">
+      <td class="center">
+        <b><code>RBO-1Lo</code></b>
+      </td>
+      <td>Loop jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=RBO-1Lo"><img src="doc/RBO-1Lo.svg" height="150" alt="Loop jump"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Flip">
+      <td class="center">
+        <b><code>LBI-1F</code></b>
+      </td>
+      <td>Flip jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LBI-1F"><img src="doc/LBI-1F.svg" height="150" alt="Flip"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Lutz">
+      <td class="center">
+        <b><code>LBO-1Lz</code></b>
+      </td>
+      <td>Lutz jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LBO-1Lz"><img src="doc/LBO-1Lz.svg" height="150" alt="Lutz"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Axel">
+      <td class="center">
+        <b><code>LFO-1A</code></b>
+      </td>
+      <td>Axel jump</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=LFO-1A"><img src="doc/LFO-1A.svg" height="150" alt="Axel"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>entry-angle</code></b>: Angle of rotation for entry edge, in degrees
+          (default <code>30</code>).
+          Can also be modified by a <code>&lt;</code> or <code>&gt;</code> (repeated) suffix.
+          </li>
+          <li><b><code>entry-len</code></b>: Length of entry edge, in centimetres
+          (default <code>600</code>).
+          Can also be modified by a <code>+</code> or <code>-</code> (repeated) suffix.
+          </li>
+          <li><b><code>exit-angle</code></b>: Angle of rotation for exit edge, in degrees
+          (default <code>40</code>).
+          </li>
+          <li><b><code>exit-len</code></b>: Length of exit edge, in centimetres
+          (default <code>400</code>).
+          </li>
+          <li><b><code>style</code></b>: Style of line
+          (default <code>""</code>).
+          </li>
+          <li><b><code>jump-label</code></b>: Replacement jump label, used if non-empty
+          (default <code>""</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage, or -1 to use global value
+          (default <code>-1</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Warp">
+      <td class="center">
+        <b><code>Warp[x&#x3D;100,y&#x3D;100,dir&#x3D;270]</code></b>
+      </td>
+      <td>Move skater to new location/position</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>x</code></b>: Horizontal coordinate to warp to
+          (default <code>0</code>).
+          </li>
+          <li><b><code>y</code></b>: Vertical coordinate to warp to
+          (default <code>0</code>).
+          </li>
+          <li><b><code>dir</code></b>: Direction to be facing after warp, in degrees (0 is facing down)
+          (default <code>0</code>).
+          </li>
+          <li><b><code>code</code></b>: Foot code to start with after warp
+          (default <code>""</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Shift">
+      <td class="center">
+        <b><code>Shift[fwd&#x3D;50,side&#x3D;50,rotate&#x3D;270]</code></b>
+      </td>
+      <td>Move skater relative to current location and direction</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>fwd</code></b>: Distance to shift forward in direction of travel
+          (default <code>0</code>).
+          </li>
+          <li><b><code>side</code></b>: Distance to shift sidewards relative to direction of travel
+          (default <code>0</code>).
+          </li>
+          <li><b><code>rotate</code></b>: Rotation (clockwise) to perform, in degrees
+          (default <code>0</code>).
+          </li>
+          <li><b><code>code</code></b>: Foot code to start with after shift
+          (default <code>""</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Rink">
+      <td class="center">
+        <b><code>Rink</code></b>
+      </td>
+      <td>Rink depiction</td>
+      <td class="center">
+        <div class="example"><a href="./preview.html?text=Rink"><img src="doc/Rink.svg" height="150" alt="Rink"/></a></div>
+      </td>
+      <td>
+        <ul>
+          <li><b><code>width</code></b>: Rink width in centimetres
+          (default <code>3000</code>).
+          </li>
+          <li><b><code>length</code></b>: Rink length in centimetres
+          (default <code>6100</code>).
+          </li>
+          <li><b><code>centre-line</code></b>: Whether to show the centre line
+          (default <code>true</code>).
+          </li>
+          <li><b><code>centre-circle</code></b>: Size of the centre circle in centimetre, 0 to omit
+          (default <code>400</code>).
+          </li>
+          <li><b><code>centre-faceoff</code></b>: Whether to show the centre face-off
+          (default <code>true</code>).
+          </li>
+          <li><b><code>mid-lines</code></b>: Location of mid-lines in centimetres from the centre line; 0 to omit
+          (default <code>800</code>).
+          </li>
+          <li><b><code>goal-lines</code></b>: Location of goal lines in centimetres from the ends; 0 to omit
+          (default <code>0</code>).
+          </li>
+          <li><b><code>goals</code></b>: Whether to show the goals
+          (default <code>false</code>).
+          </li>
+          <li><b><code>faceoffs</code></b>: Whether to show the face-offs
+          (default <code>false</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Info">
+      <td class="center">
+        <b><code>Info[markers&#x3D;true,grid&#x3D;100,move-bounds&#x3D;true]</code></b>
+      </td>
+      <td>Set diagram rendering information</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>markers</code></b>: Whether to show begin/end move markers
+          (default <code>false</code>).
+          </li>
+          <li><b><code>bounds</code></b>: Whether to show overall bounds
+          (default <code>false</code>).
+          </li>
+          <li><b><code>grid</code></b>: Grid size to display, 0 for no grid
+          (default <code>0</code>).
+          </li>
+          <li><b><code>margin-x</code></b>: Horizontal margin
+          (default <code>50</code>).
+          </li>
+          <li><b><code>margin-y</code></b>: Vertical margin
+          (default <code>50</code>).
+          </li>
+          <li><b><code>move-bounds</code></b>: Whether to show bounds of each move
+          (default <code>false</code>).
+          </li>
+          <li><b><code>font-size</code></b>: Font size for labels; 0 for no labels, -1 for auto-scaling
+          (default <code>-1</code>).
+          </li>
+          <li><b><code>stroke-width</code></b>: Stroke width; 0 for auto-scaling
+          (default <code>0</code>).
+          </li>
+          <li><b><code>label-offset</code></b>: Amount to scale label offsets by, as a percentage
+          (default <code>100</code>).
+          </li>
+          <li><b><code>auto-count</code></b>: Whether to automatically count moves
+          (default <code>false</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Title">
+      <td class="center">
+        <b><code>Title[text&#x3D;&quot;Waltz&quot;]</code></b>
+      </td>
+      <td>Diagram title</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>text</code></b>: Text of title
+          (default <code>""</code>).
+          </li>
+          <li><b><code>x</code></b>: Horizontal location of title; -1 indicates automatic centering
+          (default <code>-1</code>).
+          </li>
+          <li><b><code>y</code></b>: Vertical location of title
+          (default <code>100</code>).
+          </li>
+          <li><b><code>font-size</code></b>: Font size for title; 0 for auto-scaling
+          (default <code>0</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Text">
+      <td class="center">
+        <b><code>Text[text&#x3D;&quot;Start&quot;,x&#x3D;500,y&#x3D;200]</code></b>
+      </td>
+      <td>Diagram text</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>text</code></b>: Text to display
+          (default <code>""</code>).
+          </li>
+          <li><b><code>x</code></b>: Horizontal location of text
+          (default <code>100</code>).
+          </li>
+          <li><b><code>y</code></b>: Vertical location of text (increasing down)
+          (default <code>100</code>).
+          </li>
+          <li><b><code>font-size</code></b>: Font size for label; 0 for auto-scaling
+          (default <code>0</code>).
+          </li>
+          <li><b><code>rotate</code></b>: Angle to rotate text by
+          (default <code>0</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr id="ref-Label">
+      <td class="center">
+        <b><code>Label[text&#x3D;&quot;CoE&quot;,fwd&#x3D;50,side&#x3D;20]</code></b>
+      </td>
+      <td>Diagram label relative to current position</td>
+      <td class="center">
+      </td>
+      <td>
+        <ul>
+          <li><b><code>text</code></b>: Label to display
+          (default <code>""</code>).
+          </li>
+          <li><b><code>fwd</code></b>: Location of text relative to current position, in current direction
+          (default <code>0</code>).
+          </li>
+          <li><b><code>side</code></b>: Location of text relative to current position, sideways from current direction
+          (default <code>0</code>).
+          </li>
+          <li><b><code>font-size</code></b>: Font size for label; 0 for auto-scaling
+          (default <code>0</code>).
+          </li>
+          <li><b><code>rotate</code></b>: Angle to rotate text by
+          (default <code>0</code>).
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
